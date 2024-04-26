@@ -13,7 +13,7 @@ import static by.trofimov.jdbc.util.Constant.*;
 
 public class TicketDaoImpl implements TicketDao {
 
-    private static final TicketDaoImpl INSTANCE = new TicketDaoImpl();
+    private static final TicketDao INSTANCE = new TicketDaoImpl();
 
     private TicketDaoImpl() {
     }
@@ -39,6 +39,22 @@ public class TicketDaoImpl implements TicketDao {
     }
 
     @Override
+    public void update(Ticket ticket) {
+        try (Connection connection = ConnectionManager.get();
+             PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SQL)) {
+            preparedStatement.setString(1, ticket.getPassengerNo());
+            preparedStatement.setString(2, ticket.getPassengerName());
+            preparedStatement.setLong(3, ticket.getFlightId());
+            preparedStatement.setString(4, ticket.getSeatNo());
+            preparedStatement.setBigDecimal(5, ticket.getCost());
+            preparedStatement.setLong(6, ticket.getId());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
     public boolean delete(Long id) {
         boolean result;
         try (Connection connection = ConnectionManager.get();
@@ -51,7 +67,7 @@ public class TicketDaoImpl implements TicketDao {
         return result;
     }
 
-    public static TicketDaoImpl getInstance() {
+    public static TicketDao getInstance() {
         return INSTANCE;
     }
 
