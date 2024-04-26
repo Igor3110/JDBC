@@ -2,7 +2,8 @@ package by.trofimov.jdbc.util;
 
 public final class Constant {
 
-    private Constant() {}
+    private Constant() {
+    }
 
     public static final String DB_URL = "db.url";
     public static final String DB_USERNAME = "db.username";
@@ -17,6 +18,11 @@ public final class Constant {
                    cost
             FROM ticket
             """;
+
+    public static final String FILTER_SQL = FIND_ALL_SQL + """
+            LIMIT ?
+            OFFSET ?
+             """;
 
     public static final String FIND_BY_ID_SQL = FIND_ALL_SQL + """
             WHERE id = ?

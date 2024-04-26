@@ -1,3 +1,4 @@
+
 package by.trofimov.jdbc.util;
 
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import by.trofimov.jdbc.dto.TicketFilter;
 import by.trofimov.jdbc.entity.Ticket;
 import by.trofimov.jdbc.exception.DaoException;
 
@@ -21,6 +23,27 @@ public final class TicketDaoUtil {
     public static List<Ticket> findAll() {
         try (Connection connection = ConnectionManager.get();
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Ticket> tickets = new ArrayList<>();
+            while (resultSet.next()) {
+                tickets.add(buildTicket(resultSet));
+            }
+            return tickets;
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    public static List<Ticket> findByFilter(TicketFilter ticketFilter) {
+        List<Object> parameters = new ArrayList<>();
+        parameters.add(ticketFilter.limit());
+        parameters.add(ticketFilter.offset());
+        try (Connection connection = ConnectionManager.get();
+             PreparedStatement preparedStatement = connection.prepareStatement(FILTER_SQL)) {
+            for (int i = 0; i < parameters.size(); i++) {
+                preparedStatement.setObject(i + 1, parameters.get(i));
+            }
+            System.out.println(preparedStatement);
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Ticket> tickets = new ArrayList<>();
             while (resultSet.next()) {

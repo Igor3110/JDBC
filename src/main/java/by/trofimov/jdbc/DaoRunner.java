@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import by.trofimov.jdbc.dto.TicketFilter;
 import by.trofimov.jdbc.entity.Ticket;
 import by.trofimov.jdbc.dao.TicketDao;
 import by.trofimov.jdbc.dao.TicketDaoImpl;
@@ -17,6 +18,7 @@ public class DaoRunner {
         saveTest();
         updateTest(2L, 208.11);
         findAllTest();
+        findByFilterTest();
     }
 
     private static void deleteTest(Long id) {
@@ -49,6 +51,12 @@ public class DaoRunner {
 
     private static void findAllTest() {
         List<Ticket> tickets = TicketDaoUtil.findAll();
+        tickets.forEach(System.out::println);
+    }
+
+    private static void findByFilterTest() {
+        TicketFilter ticketFilter = new TicketFilter(3, 0);
+        List<Ticket> tickets = TicketDaoUtil.findByFilter(ticketFilter);
         tickets.forEach(System.out::println);
     }
 
