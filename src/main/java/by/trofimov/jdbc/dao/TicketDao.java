@@ -1,11 +1,18 @@
 package by.trofimov.jdbc.dao;
 
+import by.trofimov.jdbc.dto.TicketFilter;
 import by.trofimov.jdbc.entity.Ticket;
 
-public interface TicketDao {
+import java.util.List;
+import java.util.Optional;
 
-   Ticket save(Ticket ticket);
-   void update(Ticket ticket);
-   boolean delete(Long id);
+public interface TicketDao<K, E> {
+
+   E save(E ticket);
+   Optional<E> findById(K id);
+   List<E> findAll();
+   List<E> findByFilter(TicketFilter ticketFilter);
+   void update(E ticket);
+   boolean delete(K id);
 
 }

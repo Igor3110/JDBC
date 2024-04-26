@@ -9,8 +9,6 @@ import by.trofimov.jdbc.entity.Ticket;
 import by.trofimov.jdbc.dao.TicketDao;
 import by.trofimov.jdbc.dao.TicketDaoImpl;
 
-import by.trofimov.jdbc.util.TicketDaoUtil;
-
 public class DaoRunner {
 
     public static void main(String[] args) {
@@ -22,13 +20,13 @@ public class DaoRunner {
     }
 
     private static void deleteTest(Long id) {
-        TicketDao ticketDao = TicketDaoImpl.getInstance();
+        TicketDao<Long, Ticket> ticketDao = TicketDaoImpl.getInstance();
         boolean deleteResult = ticketDao.delete(id);
         System.out.println(deleteResult);
     }
 
     private static void saveTest() {
-        TicketDao ticketDao = TicketDaoImpl.getInstance();
+        TicketDao<Long, Ticket> ticketDao = TicketDaoImpl.getInstance();
         Ticket ticket = new Ticket();
         ticket.setPassengerNo("1234567");
         ticket.setPassengerName("Test");
@@ -40,8 +38,8 @@ public class DaoRunner {
     }
 
     private static void updateTest(Long id, double value) {
-        TicketDao ticketDao = TicketDaoImpl.getInstance();
-        Optional<Ticket> maybeTicket = TicketDaoUtil.findById(id);
+        TicketDao<Long, Ticket> ticketDao = TicketDaoImpl.getInstance();
+        Optional<Ticket> maybeTicket = ticketDao.findById(id);
         System.out.println(maybeTicket);
         maybeTicket.ifPresent(ticket -> {
             ticket.setCost(BigDecimal.valueOf(value));
@@ -50,12 +48,12 @@ public class DaoRunner {
     }
 
     private static void findAllTest() {
-        List<Ticket> tickets = TicketDaoUtil.findAll();
+        List<Ticket> tickets = TicketDaoImpl.getInstance().findAll();
         tickets.forEach(System.out::println);
     }
 
     private static void findByFilterTest(TicketFilter ticketFilter) {
-        List<Ticket> tickets = TicketDaoUtil.findByFilter(ticketFilter);
+        List<Ticket> tickets = TicketDaoImpl.getInstance().findByFilter(ticketFilter);
         tickets.forEach(System.out::println);
     }
 

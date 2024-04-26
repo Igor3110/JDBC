@@ -4,16 +4,20 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
+import by.trofimov.jdbc.dto.TicketFilter;
 import by.trofimov.jdbc.entity.Ticket;
 import by.trofimov.jdbc.exception.DaoException;
 import by.trofimov.jdbc.util.ConnectionManager;
 
 import static by.trofimov.jdbc.util.Constant.*;
 
-public class TicketDaoImpl implements TicketDao {
+public class TicketDaoImpl implements TicketDao<Long, Ticket> {
 
-    private static final TicketDao INSTANCE = new TicketDaoImpl();
+    private static final TicketDao<Long, Ticket> INSTANCE = new TicketDaoImpl();
 
     private TicketDaoImpl() {
     }
@@ -36,6 +40,59 @@ public class TicketDaoImpl implements TicketDao {
             throw new DaoException(e);
         }
         return ticket;
+    }
+
+    @Override
+    public Optional<Ticket> findById(Long id) {
+        try (Connection connection = ConnectionManager.get();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID_SQL)) {
+            preparedStatement.setLong(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            Ticket ticket = null;
+            if (resultSet.next()) {
+                ticket = buildTicket(resultSet);
+            }
+            return Optional.ofNullable(ticket);
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public List<Ticket> findAll() {
+        try (Connection connection = ConnectionManager.get();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Ticket> tickets = new ArrayList<>();
+            while (resultSet.next()) {
+                tickets.add(buildTicket(resultSet));
+            }
+            return tickets;
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public List<Ticket> findByFilter(TicketFilter ticketFilter) {
+        List<Object> parameters = new ArrayList<>();
+        parameters.add(ticketFilter.limit());
+        parameters.add(ticketFilter.offset());
+        try (Connection connection = ConnectionManager.get();
+             PreparedStatement preparedStatement = connection.prepareStatement(FILTER_SQL)) {
+            for (int i = 0; i < parameters.size(); i++) {
+                preparedStatement.setObject(i + 1, parameters.get(i));
+            }
+            System.out.println(preparedStatement);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Ticket> tickets = new ArrayList<>();
+            while (resultSet.next()) {
+                tickets.add(buildTicket(resultSet));
+            }
+            return tickets;
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
     }
 
     @Override
@@ -67,8 +124,19 @@ public class TicketDaoImpl implements TicketDao {
         return result;
     }
 
-    public static TicketDao getInstance() {
+    public static TicketDao<Long, Ticket> getInstance() {
         return INSTANCE;
+    }
+
+    private Ticket buildTicket(ResultSet resultSet) throws SQLException {
+        return new Ticket(
+                resultSet.getLong(KEY_ID),
+                resultSet.getString(KEY_PASSENGER_NO),
+                resultSet.getString(KEY_PASSENGER_NAME),
+                resultSet.getLong(KEY_FLIGHT_ID),
+                resultSet.getString(KEY_SEAT_NO),
+                resultSet.getBigDecimal(KEY_COST)
+        );
     }
 
 }
