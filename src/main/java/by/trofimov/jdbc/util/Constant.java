@@ -5,6 +5,8 @@ public final class Constant {
     private Constant() {
     }
 
+    public static final String SEPARATOR = ";";
+
     public static final String DB_URL = "db.url";
     public static final String DB_USERNAME = "db.username";
     public static final String DB_PASSWORD = "db.password";

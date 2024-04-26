@@ -5,6 +5,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+import static by.trofimov.jdbc.util.Constant.SEPARATOR;
+
 public class Ticket implements Serializable {
 
     @Serial
@@ -95,14 +97,8 @@ public class Ticket implements Serializable {
 
     @Override
     public String toString() {
-        return "Ticket{" +
-                "id=" + id +
-                ", passengerNo='" + passengerNo + '\'' +
-                ", passengerName='" + passengerName + '\'' +
-                ", flightId=" + flightId +
-                ", seatNo='" + seatNo + '\'' +
-                ", cost=" + cost +
-                '}';
+        return getClass().getSimpleName() + SEPARATOR + id + SEPARATOR + passengerNo + SEPARATOR + passengerName +
+               SEPARATOR + flightId + SEPARATOR + seatNo + SEPARATOR + cost;
     }
 
 }
