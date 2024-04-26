@@ -18,7 +18,7 @@ public class DaoRunner {
         saveTest();
         updateTest(2L, 208.11);
         findAllTest();
-        findByFilterTest();
+        findByFilterTest(new TicketFilter(3, 0));
     }
 
     private static void deleteTest(Long id) {
@@ -54,8 +54,7 @@ public class DaoRunner {
         tickets.forEach(System.out::println);
     }
 
-    private static void findByFilterTest() {
-        TicketFilter ticketFilter = new TicketFilter(3, 0);
+    private static void findByFilterTest(TicketFilter ticketFilter) {
         List<Ticket> tickets = TicketDaoUtil.findByFilter(ticketFilter);
         tickets.forEach(System.out::println);
     }
